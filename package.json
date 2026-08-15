@@ -1,0 +1,24 @@
+{
+  "name": "trust-gate",
+  "version": "1.0.0",
+  "description": "Built fresh for Monad Blitz V2 @ Beijing, 2026-08-15. Full implementation plan: [PLAN.md](./PLAN.md).",
+  "private": true,
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.20.1",
+    "hardhat": "^2.29.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.6.1"
+  }
+}
