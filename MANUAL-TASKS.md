@@ -12,7 +12,7 @@ Living checklist of things that need a human, not code. Maps to PLAN.md's U6 tra
   - RPC: `https://testnet-rpc.monad.xyz`
   - Chain ID: `10143`
   - Decided: this wallet doubles as the deploy wallet Eng's scripts use (not demo-only). Eng needs the private key for `.env` (`.env` is gitignored) — coordinating exact var name with Eng session, will export once confirmed.
-- [ ] **Faucet**: `https://testnet.monad.xyz` — fund that wallet with MON. Fund generously; Monad's Reserve Balance mechanism can revert an already-included transaction if the balance is cutting it close, and that looks exactly like a contract bug when it isn't.
+- [x] **Faucet**: `https://testnet.monad.xyz` redirects to the dev portal now — the working URL is **`https://faucet.monad.xyz`**. Claimed 5 MON to `0x5321ef319E4ffC58ffD748e3DA119bc22135BA4A`, verified on-chain via `https://testnet.monadvision.com` (not just the faucet's own success toast — its per-browser cooldown state showed a stale "tokens sent" message before the real claim even went through). Fund generously; Monad's Reserve Balance mechanism can revert an already-included transaction if the balance is cutting it close, and that looks exactly like a contract bug when it isn't. Faucet page has "Connect X / Connect Discord" for extra tokens if 5 MON turns out tight during U2/U3 testing.
 - [ ] **MOJO**: confirm logged in at `mojo.devnads.com`, registered for the event, team/captain set. Only the captain can submit later, and no team changes are possible after submission — lock this in early. Login uses the same email as event check-in (the one tied to your check-in code) — use that email, not a personal one, or the submission won't match your registration.
 
 ## Whenever you have a spare minute
