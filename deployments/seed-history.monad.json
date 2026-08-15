@@ -1,0 +1,41 @@
+{
+  "network": "monad",
+  "agents": [
+    {
+      "label": "clean-agent",
+      "agentId": "1",
+      "owner": "0x5321ef319E4ffC58ffD748e3DA119bc22135BA4A",
+      "receiptCount": 1,
+      "verdict": {
+        "wouldGrant": true,
+        "reason": "GRANTED",
+        "verifiedCount": "1",
+        "mismatchCount": "0"
+      }
+    },
+    {
+      "label": "flagged-agent",
+      "agentId": "2",
+      "owner": "0x5321ef319E4ffC58ffD748e3DA119bc22135BA4A",
+      "receiptCount": 3,
+      "verdict": {
+        "wouldGrant": false,
+        "reason": "MISMATCH_ON_RECORD",
+        "verifiedCount": "2",
+        "mismatchCount": "1"
+      }
+    },
+    {
+      "label": "unrated-agent",
+      "agentId": "3",
+      "owner": "0x5321ef319E4ffC58ffD748e3DA119bc22135BA4A",
+      "receiptCount": 0,
+      "verdict": {
+        "wouldGrant": false,
+        "reason": "INSUFFICIENT_HISTORY",
+        "verifiedCount": "0",
+        "mismatchCount": "0"
+      }
+    }
+  ]
+}

@@ -1,10 +1,8 @@
-// TODO(Eng): replace with the real addresses from deployments/monad.json once
-// scripts/deploy.ts has run against the actual Monad testnet (U2). Placeholder
-// zero addresses let the rest of the frontend build and render before that.
+// Live on Monad testnet — see deployments/monad.json (block 53858083+ range).
 export const CONTRACT_ADDRESSES = {
-  AgentIdentity: "0x0000000000000000000000000000000000000000",
-  ActionLedger: "0x0000000000000000000000000000000000000000",
-  TrustGate: "0x0000000000000000000000000000000000000000",
+  AgentIdentity: "0xC51AB4dF12A2a2F293fc4e90B1C5e6bB8D147095",
+  ActionLedger: "0x2Fc2Cac0Ec46c8a0C6da5aD66a7F0610678A9dD6",
+  TrustGate: "0xA5e2c58B32F92825389E5B038aA4E8c69E6B5818",
 } as const;
 
 export const MONAD_TESTNET = {

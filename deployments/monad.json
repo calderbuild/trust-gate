@@ -1,0 +1,10 @@
+{
+  "network": "monad",
+  "chainId": "10143",
+  "deployer": "0x5321ef319E4ffC58ffD748e3DA119bc22135BA4A",
+  "contracts": {
+    "AgentIdentity": "0xC51AB4dF12A2a2F293fc4e90B1C5e6bB8D147095",
+    "ActionLedger": "0x2Fc2Cac0Ec46c8a0C6da5aD66a7F0610678A9dD6",
+    "TrustGate": "0xA5e2c58B32F92825389E5B038aA4E8c69E6B5818"
+  }
+}
