@@ -3,8 +3,17 @@ import { ethers } from "hardhat";
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import type { AgentIdentity, ActionLedger } from "../typechain-types";
 
-async function signOutcome(signer: HardhatEthersSigner, receiptId: bigint, verified: boolean) {
-  const packed = ethers.solidityPacked(["uint256", "bool"], [receiptId, verified]);
+async function signOutcome(
+  signer: HardhatEthersSigner,
+  actionLedgerAddress: string,
+  chainId: bigint,
+  receiptId: bigint,
+  verified: boolean
+) {
+  const packed = ethers.solidityPacked(
+    ["uint256", "address", "uint256", "bool"],
+    [chainId, actionLedgerAddress, receiptId, verified]
+  );
   const messageHash = ethers.keccak256(packed);
   return signer.signMessage(ethers.getBytes(messageHash));
 }
@@ -15,6 +24,10 @@ async function registerAgent(agentIdentity: AgentIdentity) {
   return agentId;
 }
 
+// Called with no .connect() throughout this file, so both registerAgent and
+// createReceipt default to signers[0] (the fixture's implicit agent owner) —
+// satisfying ActionLedger's ownership check without needing a named owner
+// signer threaded through every test.
 async function createResolvedReceipt(
   actionLedger: ActionLedger,
   agentId: bigint,
@@ -23,7 +36,9 @@ async function createResolvedReceipt(
 ) {
   const receiptId = await actionLedger.createReceipt.staticCall(agentId, counterparty.address);
   await actionLedger.createReceipt(agentId, counterparty.address);
-  const signature = await signOutcome(counterparty, receiptId, verified);
+  const { chainId } = await ethers.provider.getNetwork();
+  const actionLedgerAddress = await actionLedger.getAddress();
+  const signature = await signOutcome(counterparty, actionLedgerAddress, chainId, receiptId, verified);
   await actionLedger.linkOutcome(receiptId, verified, signature);
   return receiptId;
 }
@@ -37,7 +52,7 @@ describe("TrustGate", () => {
     await agentIdentity.waitForDeployment();
 
     const ActionLedgerFactory = await ethers.getContractFactory("ActionLedger");
-    const actionLedger = await ActionLedgerFactory.deploy();
+    const actionLedger = await ActionLedgerFactory.deploy(await agentIdentity.getAddress());
     await actionLedger.waitForDeployment();
 
     const TrustGateFactory = await ethers.getContractFactory("TrustGate");
@@ -69,9 +84,11 @@ describe("TrustGate", () => {
     const agentId = await registerAgent(agentIdentity);
     await createResolvedReceipt(actionLedger, agentId, counterparty, false);
 
-    const [wouldGrant, reason] = await trustGate.previewAccess(agentId);
+    const [wouldGrant, reason, verifiedCount, mismatchCount] = await trustGate.previewAccess(agentId);
     expect(wouldGrant).to.equal(false);
     expect(reason).to.equal("MISMATCH_ON_RECORD");
+    expect(verifiedCount).to.equal(0n);
+    expect(mismatchCount).to.equal(1n);
   });
 
   // Scenario 3
@@ -140,6 +157,27 @@ describe("TrustGate", () => {
       const granted = await trustGate.checkAccess.staticCall(agentId);
       expect(granted).to.equal(wouldGrant, `checkAccess/previewAccess disagree for agentId ${agentId}`);
     }
+  });
+
+  // Review finding: the verifiedCount/mismatchCount accumulation loop in
+  // previewAccess was only ever exercised with 0 or 1 receipts. This proves
+  // KTD5's stated priority — any MISMATCH denies, even against a would-otherwise-
+  // qualify VERIFIED count — under realistic multi-receipt history, and that
+  // the loop aggregates correctly across more than one iteration.
+  it("previewAccess denies with correct counts when an agent has multiple VERIFIED receipts and one MISMATCH", async () => {
+    const { agentIdentity, actionLedger, trustGate, counterparty } = await deployFixture();
+    const agentId = await registerAgent(agentIdentity);
+    await createResolvedReceipt(actionLedger, agentId, counterparty, true);
+    await createResolvedReceipt(actionLedger, agentId, counterparty, true);
+    await createResolvedReceipt(actionLedger, agentId, counterparty, false);
+
+    const [wouldGrant, reason, verifiedCount, mismatchCount] = await trustGate.previewAccess(agentId);
+    expect(wouldGrant).to.equal(false);
+    expect(reason).to.equal("MISMATCH_ON_RECORD");
+    expect(verifiedCount).to.equal(2n);
+    expect(mismatchCount).to.equal(1n);
+
+    expect(await trustGate.checkAccess.staticCall(agentId)).to.equal(false);
   });
 
   // Scenario 11: non-existent agentId. AgentIdentity.isActive() returns false

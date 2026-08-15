@@ -2,27 +2,24 @@
 
 ## Project Structure & Module Organization
 
-The repo is planning-stage today: PLAN.md holds the implementation plan, and research/ holds competition rules, idea selection, and demo material. Source code is not scaffolded yet.
-
-Per PLAN.md, implementation lands as:
+PLAN.md holds the implementation plan, and research/ holds competition rules, idea selection, and demo material. U1 (the three contracts, tested) has landed:
 
 - contracts/ - Solidity: AgentIdentity.sol, ActionLedger.sol, TrustGate.sol
-- test/ - Hardhat tests, one <Contract>.test.ts per contract
-- scripts/ - deploy.ts and seed-history.ts
-- frontend/src/lib/ - contract plumbing and its unit tests
-- frontend/src/components/ - TrustGateDemo.tsx
-- hardhat.config.ts - compiler, network, and Sourcify config
+- test/ - Hardhat tests, one <Contract>.test.ts per contract, 26 passing
+- scripts/ - deploy.ts and seed-history.ts (not written yet, U2/U3)
+- frontend/src/lib/ - contract plumbing and its unit tests (not written yet, U4)
+- frontend/src/components/ - TrustGateDemo.tsx (not written yet, U4)
+- hardhat.config.ts - compiler (solc 0.8.24, evmVersion cancun), Hardhat 2.29 pinned to match Monad's documented tooling
 
 Treat PLAN.md as the source of truth for scope and decisions. research/ is reference material, not source.
 
 ## Build, Test, and Development Commands
 
-No build exists yet; the test script in package.json is a placeholder. After the Hardhat scaffold lands:
-
-- npx hardhat test - runs the 11 contract scenarios defined in PLAN.md
-- npx hardhat run scripts/deploy.ts --network monad - deploys in order: AgentIdentity, ActionLedger, TrustGate
+- npx hardhat test - runs the contract test suite (26 tests: 11 PLAN.md scenarios plus supplementary coverage added during U1 review)
+- npx hardhat compile - compiles contracts (evmVersion cancun, required for OpenZeppelin 5.6.1's MCOPY usage)
+- npx hardhat run scripts/deploy.ts --network monad - deploys in order: AgentIdentity, ActionLedger, TrustGate (script not written yet)
 - npx hardhat verify --network monad <address> [args...] - verifies source on Sourcify
-- Frontend tests run over frontend/src/lib/__tests__/contracts.test.ts with the scaffold's runner
+- Frontend tests run over frontend/src/lib/**tests**/contracts.test.ts with the scaffold's runner (frontend not scaffolded yet)
 
 ## Coding Style & Naming Conventions
 

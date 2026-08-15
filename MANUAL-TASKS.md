@@ -11,9 +11,9 @@ Living checklist of things that need a human, not code. Maps to PLAN.md's U6 tra
 - [ ] **Wallet**: install Rabby (recommended over MetaMask per the org's own guidance), add Monad testnet manually:
   - RPC: `https://testnet-rpc.monad.xyz`
   - Chain ID: `10143`
-  - Decide: is this wallet just for the live demo click-through, or also the deploy wallet Eng's scripts use? Either works — flag your preference.
+  - Decided: this wallet doubles as the deploy wallet Eng's scripts use (not demo-only). Eng needs the private key for `.env` (`.env` is gitignored) — coordinating exact var name with Eng session, will export once confirmed.
 - [ ] **Faucet**: `https://testnet.monad.xyz` — fund that wallet with MON. Fund generously; Monad's Reserve Balance mechanism can revert an already-included transaction if the balance is cutting it close, and that looks exactly like a contract bug when it isn't.
-- [ ] **MOJO**: confirm logged in at `mojo.devnads.com`, registered for the event, team/captain set. Only the captain can submit later, and no team changes are possible after submission — lock this in early.
+- [ ] **MOJO**: confirm logged in at `mojo.devnads.com`, registered for the event, team/captain set. Only the captain can submit later, and no team changes are possible after submission — lock this in early. Login uses the same email as event check-in (the one tied to your check-in code) — use that email, not a personal one, or the submission won't match your registration.
 
 ## Whenever you have a spare minute
 
@@ -32,4 +32,4 @@ Living checklist of things that need a human, not code. Maps to PLAN.md's U6 tra
 
 ## Deadline
 
-Target **18:30** (on-site notes mention 19:00 but that's unconfirmed — treat 18:30 as the real deadline with safety margin).
+Official deadline is **19:00** — confirmed from the org's own kickoff talk (two independent meeting-note sources agree: "项目提交截止时间为今日下午 7 点", submit early to avoid platform congestion at the cutoff). Still treat **18:30** as our internal target so there's real margin before the hard 19:00 cutoff, not because 18:30 is the official time.
