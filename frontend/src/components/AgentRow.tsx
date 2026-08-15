@@ -20,7 +20,7 @@ export default function AgentRow({ agent, preview, selected, onSelect, locale, s
       onClick={onSelect}
       style={style}
       className={`animate-row-in w-full min-h-[44px] text-left border-b border-line px-5 py-4 transition-[background-color,transform] duration-200 active:scale-[0.99] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-seal-text ${
-        selected ? "bg-paper-raised border-l-4 border-l-seal" : "border-l-4 border-l-transparent hover:bg-paper-raised/60 active:bg-paper-raised/80"
+        selected ? "bg-paper border-l-4 border-l-seal" : "border-l-4 border-l-transparent hover:bg-paper/60 active:bg-paper/80"
       }`}
       aria-pressed={selected}
     >

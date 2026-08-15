@@ -6,9 +6,11 @@ interface Dictionary {
   eyebrow: string;
   subhead: string;
   checkAccess: string;
+  checkAccessHint: string;
   connectWallet: string;
   connecting: string;
   gateOnChain: string;
+  gateOnChainHint: string;
   gating: string;
   noWallet: string;
   verified: string;
@@ -27,9 +29,11 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
     eyebrow: "链上信任台账 · MONAD 测试网",
     subhead: "只有交互双方都签字确认，准入才会通过——agent 无法单方面写自己的历史记录。",
     checkAccess: "免费预检",
+    checkAccessHint: "不上链，不花 gas",
     connectWallet: "连接钱包",
     connecting: "连接中…",
     gateOnChain: "链上验证",
+    gateOnChainHint: "真实交易，需要签名和 gas",
     gating: "验证中…",
     noWallet: "未检测到钱包 —— 电脑上装 Rabby 等浏览器钱包，或用手机钱包 App（imToken、OKX、MetaMask）自带的浏览器打开本页，即可连接。",
     verified: "个验证通过",
@@ -46,9 +50,11 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
     eyebrow: "On-chain trust ledger · Monad testnet",
     subhead: "Access only clears when both sides of an interaction sign off. An agent can never write its own history.",
     checkAccess: "Check access",
+    checkAccessHint: "Free, off-chain",
     connectWallet: "Connect wallet",
     connecting: "Connecting…",
     gateOnChain: "Gate on-chain",
+    gateOnChainHint: "Real transaction — needs a signature and gas",
     gating: "Gating…",
     noWallet:
       "No wallet detected — install Rabby on desktop, or open this page inside your mobile wallet app's browser (imToken, OKX, MetaMask) to connect.",

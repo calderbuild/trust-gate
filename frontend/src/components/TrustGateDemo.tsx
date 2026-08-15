@@ -40,6 +40,8 @@ export default function TrustGateDemo() {
     });
   }, []);
 
+  const selectedAgent = DEMO_AGENTS.find((agent) => agent.id === selectedId) ?? DEMO_AGENTS[0];
+
   function selectAgent(agentId: bigint) {
     setSelectedId(agentId);
     setResult(null);
@@ -79,70 +81,83 @@ export default function TrustGateDemo() {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-2xl px-4 py-10 sm:py-16">
-      <header className="mb-8 flex items-start justify-between gap-4">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-[0.15em] text-seal-text">{dict.eyebrow}</p>
-          <h1 className="mt-2 font-display text-5xl font-black tracking-tight text-ink sm:text-6xl">TrustGate</h1>
-          <p className="mt-3 max-w-md font-sans text-base text-muted">{dict.subhead}</p>
+    <main className="mx-auto min-h-screen max-w-3xl px-4 py-8 sm:py-14">
+      <div className="ledger-sheet">
+        <div className="ledger-perforation" aria-hidden="true" />
+        <div className="px-5 py-8 sm:px-10 sm:py-10">
+          <header className="mb-8 flex items-start justify-between gap-4">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.15em] text-seal-text">{dict.eyebrow}</p>
+              <h1 className="mt-2 font-display text-5xl font-black tracking-tight text-ink sm:text-6xl">TrustGate</h1>
+              <p className="mt-3 max-w-md font-sans text-base text-muted">{dict.subhead}</p>
+            </div>
+            <LocaleToggle locale={locale} onChange={setLocale} />
+          </header>
+
+          <section aria-label="Agents" className="border-y border-ink/80">
+            {DEMO_AGENTS.map((agent, i) => (
+              <AgentRow
+                key={agent.id.toString()}
+                agent={agent}
+                preview={previews[agent.id.toString()] ?? { status: "loading" }}
+                selected={selectedId === agent.id}
+                onSelect={() => selectAgent(agent.id)}
+                locale={locale}
+                style={{ animationDelay: `${i * 60}ms` }}
+              />
+            ))}
+          </section>
+
+          <section className="mt-6 flex flex-wrap items-start gap-4">
+            <div>
+              <button
+                type="button"
+                onClick={handleCheckAccess}
+                className="min-h-[44px] rounded-sm border border-ink px-5 py-3 font-sans text-sm font-medium text-ink transition-colors duration-200 hover:bg-paper active:bg-paper/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
+              >
+                {dict.checkAccess}
+              </button>
+              <p className="mt-1.5 font-mono text-[11px] text-muted">{dict.checkAccessHint}</p>
+            </div>
+
+            {!hasWallet ? (
+              <p className="font-mono text-xs text-muted max-w-xs pt-2.5">{dict.noWallet}</p>
+            ) : !wallet ? (
+              <div>
+                <button
+                  type="button"
+                  onClick={handleConnect}
+                  disabled={connecting}
+                  className="min-h-[44px] rounded-sm bg-ink px-5 py-3 font-sans text-sm font-medium text-paper-raised transition-opacity duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
+                >
+                  {connecting ? dict.connecting : dict.connectWallet}
+                </button>
+              </div>
+            ) : (
+              <div>
+                <button
+                  type="button"
+                  onClick={handleGateOnChain}
+                  disabled={gating}
+                  className="min-h-[44px] rounded-sm bg-ink px-5 py-3 font-sans text-sm font-medium text-paper-raised transition-opacity duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
+                >
+                  {gating ? dict.gating : dict.gateOnChain}
+                </button>
+                <p className="mt-1.5 font-mono text-[11px] text-muted">{dict.gateOnChainHint}</p>
+              </div>
+            )}
+
+            {wallet && <span className="font-mono text-xs text-muted pt-2.5">{shortAddress(wallet.address)}</span>}
+          </section>
+
+          <div aria-live="polite">
+            {walletError && <p className="mt-3 font-mono text-xs text-deny">{walletError}</p>}
+            {gateError && <p className="mt-3 font-mono text-xs text-deny">{gateError}</p>}
+          </div>
+
+          {result && <ResultStamp result={result} locale={locale} agentName={selectedAgent.name} />}
         </div>
-        <LocaleToggle locale={locale} onChange={setLocale} />
-      </header>
-
-      <section aria-label="Agents" className="border-y border-ink/80">
-        {DEMO_AGENTS.map((agent, i) => (
-          <AgentRow
-            key={agent.id.toString()}
-            agent={agent}
-            preview={previews[agent.id.toString()] ?? { status: "loading" }}
-            selected={selectedId === agent.id}
-            onSelect={() => selectAgent(agent.id)}
-            locale={locale}
-            style={{ animationDelay: `${i * 60}ms` }}
-          />
-        ))}
-      </section>
-
-      <section className="mt-6 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={handleCheckAccess}
-          className="min-h-[44px] rounded-sm border border-ink px-5 py-3 font-sans text-sm font-medium text-ink transition-colors duration-200 hover:bg-paper-raised active:bg-paper-raised/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
-        >
-          {dict.checkAccess}
-        </button>
-
-        {!hasWallet ? (
-          <p className="font-mono text-xs text-muted max-w-xs">{dict.noWallet}</p>
-        ) : !wallet ? (
-          <button
-            type="button"
-            onClick={handleConnect}
-            disabled={connecting}
-            className="min-h-[44px] rounded-sm bg-ink px-5 py-3 font-sans text-sm font-medium text-paper transition-opacity duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
-          >
-            {connecting ? dict.connecting : dict.connectWallet}
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleGateOnChain}
-            disabled={gating}
-            className="min-h-[44px] rounded-sm bg-ink px-5 py-3 font-sans text-sm font-medium text-paper transition-opacity duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
-          >
-            {gating ? dict.gating : dict.gateOnChain}
-          </button>
-        )}
-
-        {wallet && <span className="font-mono text-xs text-muted">{shortAddress(wallet.address)}</span>}
-      </section>
-
-      <div aria-live="polite">
-        {walletError && <p className="mt-3 font-mono text-xs text-deny">{walletError}</p>}
-        {gateError && <p className="mt-3 font-mono text-xs text-deny">{gateError}</p>}
       </div>
-
-      {result && <ResultStamp result={result} locale={locale} />}
     </main>
   );
 }
