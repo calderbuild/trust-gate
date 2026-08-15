@@ -17,9 +17,9 @@ Living checklist of things that need a human, not code. Maps to PLAN.md's U6 tra
 
 ## Whenever you have a spare minute
 
-- [ ] Start the MOJO submission form fields (logo, preview image, description) — doesn't need working code yet.
+- [ ] Start the MOJO submission form fields (logo, preview image, description) — doesn't need working code yet. GitHub field: `https://github.com/calderbuild/trust-gate` (public). Demo URL field: `https://trust-gate-flax.vercel.app` (live now — currently shows honest "not deployed yet" states on each agent row since U2 hasn't run against the real network yet; will look right once the private key lands and Eng re-deploys, no action needed from you here).
 - [ ] Draft the demo narrative half: what TrustGate is and why it matters (the ERC-8004 study finding unverified/Sybil feedback), the KTD1 honest limitation (fixes a lone liar, not two colluding keys under one operator), timed to fit a 5-minute slot.
-- [ ] Vercel login/account (only actually needed once U5's frontend is ready to deploy).
+- [x] Vercel login/account — Eng deployed straight from CLI (already authenticated), no login needed from you.
 - [ ] Vote for other teams on MOJO — counts as your activity requirement (R9), do it anytime before the deadline.
 
 ## Later — will need you at these points

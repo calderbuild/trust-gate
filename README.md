@@ -2,7 +2,7 @@
 
 An on-chain trust gate for AI agents on Monad. Access only clears when both sides of an interaction cryptographically sign off — an agent can never write its own history.
 
-Built for Monad Blitz@北京 V2, 2026-08-15. Full design rationale and requirements trace: [PLAN.md](./PLAN.md).
+Built for Monad Blitz@北京 V2, 2026-08-15. Live demo: [trust-gate-flax.vercel.app](https://trust-gate-flax.vercel.app). Full design rationale and requirements trace: [PLAN.md](./PLAN.md).
 
 ## The problem
 
