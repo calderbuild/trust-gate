@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { DEMO_AGENTS } from "../lib/demoAgents";
 import { previewAccess, checkAccess, type PreviewAccessResult, type CheckAccessResult } from "../lib/contracts";
-import { connectWallet, hasInjectedWallet, type ConnectedWallet } from "../lib/wallet";
+import { connectWallet, useHasInjectedWallet, type ConnectedWallet } from "../lib/wallet";
+import { t, DEFAULT_LOCALE, type Locale } from "../lib/i18n";
 import AgentRow from "./AgentRow";
 import ResultStamp from "./ResultStamp";
 
@@ -17,6 +18,10 @@ async function loadPreview(agentId: bigint): Promise<PreviewState> {
 }
 
 export default function TrustGateDemo() {
+  const [locale, setLocale] = useState<Locale>(DEFAULT_LOCALE);
+  const dict = t(locale);
+  const hasWallet = useHasInjectedWallet();
+
   const [previews, setPreviews] = useState<Record<string, PreviewState>>({});
   const [selectedId, setSelectedId] = useState<bigint>(DEMO_AGENTS[0].id);
   const [wallet, setWallet] = useState<ConnectedWallet | null>(null);
@@ -52,7 +57,8 @@ export default function TrustGateDemo() {
     try {
       setWallet(await connectWallet());
     } catch (err) {
-      setWalletError(err instanceof Error ? err.message : "Could not connect wallet.");
+      console.error(err);
+      setWalletError(dict.connectFailed);
     } finally {
       setConnecting(false);
     }
@@ -65,7 +71,8 @@ export default function TrustGateDemo() {
     try {
       setResult(await checkAccess(wallet.signer, selectedId));
     } catch (err) {
-      setGateError(err instanceof Error ? err.message : "Transaction failed.");
+      console.error(err);
+      setGateError(dict.gateFailed);
     } finally {
       setGating(false);
     }
@@ -73,12 +80,13 @@ export default function TrustGateDemo() {
 
   return (
     <main className="mx-auto min-h-screen max-w-2xl px-4 py-10 sm:py-16">
-      <header className="mb-8">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-seal">On-chain trust ledger · Monad testnet</p>
-        <h1 className="mt-2 font-display text-5xl font-black tracking-tight text-ink sm:text-6xl">TrustGate</h1>
-        <p className="mt-3 max-w-md font-sans text-base text-muted">
-          Access only clears when both sides of an interaction sign off. An agent can never write its own history.
-        </p>
+      <header className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-[0.15em] text-seal-text">{dict.eyebrow}</p>
+          <h1 className="mt-2 font-display text-5xl font-black tracking-tight text-ink sm:text-6xl">TrustGate</h1>
+          <p className="mt-3 max-w-md font-sans text-base text-muted">{dict.subhead}</p>
+        </div>
+        <LocaleToggle locale={locale} onChange={setLocale} />
       </header>
 
       <section aria-label="Agents" className="border-y border-ink/80">
@@ -89,6 +97,7 @@ export default function TrustGateDemo() {
             preview={previews[agent.id.toString()] ?? { status: "loading" }}
             selected={selectedId === agent.id}
             onSelect={() => selectAgent(agent.id)}
+            locale={locale}
             style={{ animationDelay: `${i * 60}ms` }}
           />
         ))}
@@ -98,41 +107,70 @@ export default function TrustGateDemo() {
         <button
           type="button"
           onClick={handleCheckAccess}
-          className="rounded-sm border border-ink px-5 py-2.5 font-sans text-sm font-medium text-ink transition-colors duration-200 hover:bg-paper-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal"
+          className="min-h-[44px] rounded-sm border border-ink px-5 py-3 font-sans text-sm font-medium text-ink transition-colors duration-200 hover:bg-paper-raised active:bg-paper-raised/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
         >
-          Check access
+          {dict.checkAccess}
         </button>
 
-        {!hasInjectedWallet() ? (
-          <p className="font-mono text-xs text-muted">Install Rabby or another wallet to gate on-chain.</p>
+        {!hasWallet ? (
+          <p className="font-mono text-xs text-muted max-w-xs">{dict.noWallet}</p>
         ) : !wallet ? (
           <button
             type="button"
             onClick={handleConnect}
             disabled={connecting}
-            className="rounded-sm bg-ink px-5 py-2.5 font-sans text-sm font-medium text-paper transition-opacity duration-200 hover:opacity-90 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal"
+            className="min-h-[44px] rounded-sm bg-ink px-5 py-3 font-sans text-sm font-medium text-paper transition-opacity duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
           >
-            {connecting ? "Connecting…" : "Connect wallet"}
+            {connecting ? dict.connecting : dict.connectWallet}
           </button>
         ) : (
           <button
             type="button"
             onClick={handleGateOnChain}
             disabled={gating}
-            className="rounded-sm bg-ink px-5 py-2.5 font-sans text-sm font-medium text-paper transition-opacity duration-200 hover:opacity-90 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal"
+            className="min-h-[44px] rounded-sm bg-ink px-5 py-3 font-sans text-sm font-medium text-paper transition-opacity duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
           >
-            {gating ? "Gating…" : "Gate on-chain"}
+            {gating ? dict.gating : dict.gateOnChain}
           </button>
         )}
 
         {wallet && <span className="font-mono text-xs text-muted">{shortAddress(wallet.address)}</span>}
       </section>
 
-      {walletError && <p className="mt-3 font-mono text-xs text-deny">{walletError}</p>}
-      {gateError && <p className="mt-3 font-mono text-xs text-deny">{gateError}</p>}
+      <div aria-live="polite">
+        {walletError && <p className="mt-3 font-mono text-xs text-deny">{walletError}</p>}
+        {gateError && <p className="mt-3 font-mono text-xs text-deny">{gateError}</p>}
+      </div>
 
-      {result && <ResultStamp result={result} />}
+      {result && <ResultStamp result={result} locale={locale} />}
     </main>
+  );
+}
+
+function LocaleToggle({ locale, onChange }: { locale: Locale; onChange: (l: Locale) => void }) {
+  return (
+    <div className="flex shrink-0 items-center gap-1 font-mono text-xs" role="group" aria-label="Language">
+      <button
+        type="button"
+        onClick={() => onChange("zh")}
+        aria-pressed={locale === "zh"}
+        className={`min-h-[36px] rounded-sm px-2.5 py-1.5 transition-colors duration-200 active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text ${
+          locale === "zh" ? "bg-ink text-paper" : "text-muted hover:text-ink"
+        }`}
+      >
+        中文
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("en")}
+        aria-pressed={locale === "en"}
+        className={`min-h-[36px] rounded-sm px-2.5 py-1.5 transition-colors duration-200 active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text ${
+          locale === "en" ? "bg-ink text-paper" : "text-muted hover:text-ink"
+        }`}
+      >
+        EN
+      </button>
+    </div>
   );
 }
 

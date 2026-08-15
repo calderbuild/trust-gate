@@ -14,7 +14,12 @@
   --color-grant-bg: #e3efe6;
   --color-deny: #a6301f;
   --color-deny-bg: #f4e5e0;
+  /* Decorative accent (borders, the stamp-adjacent brass tone) — NOT for
+     text or focus rings, it fails WCAG contrast against --color-paper
+     (~2.65:1). Use --color-seal-text for anything text-sized or a sole
+     state indicator. */
   --color-seal: #b08a3e;
+  --color-seal-text: #6b5220;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,12 +32,15 @@
     --color-grant-bg: #14261d;
     --color-deny-bg: #2b1913;
     --color-seal: #c8a35a;
+    --color-seal-text: #c8a35a;
   }
 }
 
 body {
-  background: var(--color-paper);
+  background-color: var(--color-paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {

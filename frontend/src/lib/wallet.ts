@@ -1,4 +1,5 @@
 import { BrowserProvider, type Signer } from "ethers";
+import { useEffect, useState } from "react";
 import { MONAD_TESTNET } from "./addresses";
 
 interface EthereumProvider {
@@ -11,8 +12,39 @@ declare global {
   }
 }
 
-export function hasInjectedWallet(): boolean {
+function hasInjectedWalletNow(): boolean {
   return typeof window !== "undefined" && !!window.ethereum;
+}
+
+/**
+ * Most in-app wallet browsers (imToken, OKX, MetaMask mobile) inject
+ * window.ethereum slightly after the page's own scripts run, and fire
+ * `ethereum#initialized` once it's ready — a plain synchronous check at
+ * render time can miss it. This re-checks on that event and on a short
+ * poll as a fallback for wallets that don't fire it.
+ */
+export function useHasInjectedWallet(): boolean {
+  const [present, setPresent] = useState(hasInjectedWalletNow);
+
+  useEffect(() => {
+    if (present) return;
+    const onInit = () => setPresent(true);
+    window.addEventListener("ethereum#initialized", onInit, { once: true });
+    const poll = window.setInterval(() => {
+      if (hasInjectedWalletNow()) {
+        setPresent(true);
+        window.clearInterval(poll);
+      }
+    }, 500);
+    const timeout = window.setTimeout(() => window.clearInterval(poll), 5000);
+    return () => {
+      window.removeEventListener("ethereum#initialized", onInit);
+      window.clearInterval(poll);
+      window.clearTimeout(timeout);
+    };
+  }, [present]);
+
+  return present;
 }
 
 export interface ConnectedWallet {
@@ -21,14 +53,15 @@ export interface ConnectedWallet {
 }
 
 /**
- * Connects to whatever injected wallet is present (Rabby, MetaMask — same
- * EIP-1193 interface), then ensures it's on Monad testnet, adding the chain
- * (EIP-3085) if the wallet doesn't already know it, or switching (EIP-3326)
- * if it does. Standard flow, not Monad-specific.
+ * Connects to whatever injected wallet is present (Rabby, MetaMask, or a
+ * mobile wallet app's in-app browser — same EIP-1193 interface), then
+ * ensures it's on Monad testnet, adding the chain (EIP-3085) if the wallet
+ * doesn't already know it, or switching (EIP-3326) if it does. Standard
+ * flow, not Monad-specific.
  */
 export async function connectWallet(): Promise<ConnectedWallet> {
-  if (!hasInjectedWallet()) {
-    throw new Error("No wallet found. Install Rabby or another browser wallet extension.");
+  if (!hasInjectedWalletNow()) {
+    throw new Error("No injected wallet found.");
   }
 
   const provider = new BrowserProvider(window.ethereum!);
