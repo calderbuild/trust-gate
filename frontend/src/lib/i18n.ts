@@ -22,6 +22,8 @@ interface Dictionary {
   verifiedReceipts: string;
   connectFailed: string;
   gateFailed: string;
+  scanToTry: string;
+  previewNote: string;
 }
 
 const DICTIONARIES: Record<Locale, Dictionary> = {
@@ -45,6 +47,8 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
     verifiedReceipts: "条已验证记录",
     connectFailed: "连接钱包失败，请重试。",
     gateFailed: "链上验证交易失败，请重试。",
+    scanToTry: "扫码用手机试试",
+    previewNote: "同一套合约逻辑的预览结果，未产生链上交易",
   },
   en: {
     eyebrow: "On-chain trust ledger · Monad testnet",
@@ -67,6 +71,8 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
     verifiedReceipts: "verified receipts",
     connectFailed: "Could not connect wallet. Please try again.",
     gateFailed: "Transaction failed. Please try again.",
+    scanToTry: "Scan to try it on your phone",
+    previewNote: "Preview result from the same contract logic — no transaction was sent",
   },
 };
 

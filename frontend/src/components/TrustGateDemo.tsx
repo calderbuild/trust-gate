@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { DEMO_AGENTS } from "../lib/demoAgents";
-import { previewAccess, checkAccess, type PreviewAccessResult, type CheckAccessResult } from "../lib/contracts";
+import { previewAccess, checkAccess, type PreviewAccessResult } from "../lib/contracts";
 import { connectWallet, useHasInjectedWallet, type ConnectedWallet } from "../lib/wallet";
 import { t, DEFAULT_LOCALE, type Locale } from "../lib/i18n";
 import AgentRow from "./AgentRow";
 import ResultStamp from "./ResultStamp";
+import QrTicket from "./QrTicket";
 
 type PreviewState = { status: "loading" } | { status: "error"; message: string } | { status: "ready"; data: PreviewAccessResult };
 
@@ -29,7 +30,8 @@ export default function TrustGateDemo() {
   const [connecting, setConnecting] = useState(false);
   const [gating, setGating] = useState(false);
   const [gateError, setGateError] = useState<string | null>(null);
-  const [result, setResult] = useState<CheckAccessResult | null>(null);
+  const [previewing, setPreviewing] = useState(false);
+  const [result, setResult] = useState<(PreviewAccessResult & { txHash?: string }) | null>(null);
 
   useEffect(() => {
     DEMO_AGENTS.forEach((agent) => {
@@ -49,8 +51,16 @@ export default function TrustGateDemo() {
   }
 
   async function handleCheckAccess() {
-    const state = await loadPreview(selectedId);
-    setPreviews((prev) => ({ ...prev, [selectedId.toString()]: state }));
+    setPreviewing(true);
+    try {
+      const state = await loadPreview(selectedId);
+      setPreviews((prev) => ({ ...prev, [selectedId.toString()]: state }));
+      if (state.status === "ready") {
+        setResult(state.data);
+      }
+    } finally {
+      setPreviewing(false);
+    }
   }
 
   async function handleConnect() {
@@ -113,9 +123,10 @@ export default function TrustGateDemo() {
               <button
                 type="button"
                 onClick={handleCheckAccess}
-                className="min-h-[44px] rounded-sm border border-ink px-5 py-3 font-sans text-sm font-medium text-ink transition-colors duration-200 hover:bg-paper active:bg-paper/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
+                disabled={previewing}
+                className="min-h-[44px] rounded-sm border border-ink px-5 py-3 font-sans text-sm font-medium text-ink transition-colors duration-200 hover:bg-paper active:bg-paper/80 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal-text"
               >
-                {dict.checkAccess}
+                {previewing ? dict.checking : dict.checkAccess}
               </button>
               <p className="mt-1.5 font-mono text-[11px] text-muted">{dict.checkAccessHint}</p>
             </div>
@@ -156,6 +167,8 @@ export default function TrustGateDemo() {
           </div>
 
           {result && <ResultStamp result={result} locale={locale} agentName={selectedAgent.name} />}
+
+          <QrTicket locale={locale} />
         </div>
       </div>
     </main>
