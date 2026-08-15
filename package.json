@@ -7,7 +7,9 @@
     "test": "hardhat test",
     "compile": "hardhat compile",
     "deploy:monad": "hardhat run scripts/deploy.ts --network monad",
-    "seed:monad": "hardhat run scripts/seed-history.ts --network monad"
+    "seed:monad": "hardhat run scripts/seed-history.ts --network monad",
+    "deploy-notes:monad": "hardhat run scripts/deploy-notes.ts --network monad",
+    "seed-notes:monad": "hardhat run scripts/seed-notes.ts --network monad"
   },
   "keywords": [],
   "author": "",

@@ -29,6 +29,14 @@ export const ACTION_LEDGER_ABI = [
   "function linkOutcome(uint256 receiptId, bool verified, bytes signature)",
 ] as const;
 
+export const AGENT_NOTES_ABI = [
+  "error NotOwner()",
+  "event NoteSet(uint256 indexed agentId, string note)",
+  "function noteOf(uint256 agentId) view returns (string)",
+  "function owner() view returns (address)",
+  "function setNote(uint256 agentId, string note)",
+] as const;
+
 export const TRUST_GATE_ABI = [
   "event AccessDenied(uint256 indexed agentId, string reason)",
   "event AccessGranted(uint256 indexed agentId, uint256 verifiedCount)",

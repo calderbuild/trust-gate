@@ -85,10 +85,13 @@ Deployed and seeded — not a design sketch. Chain id `10143`:
 | `AgentIdentity` | [`0xC51AB4dF12A2a2F293fc4e90B1C5e6bB8D147095`](https://testnet.monadexplorer.com/address/0xC51AB4dF12A2a2F293fc4e90B1C5e6bB8D147095) |
 | `ActionLedger`  | [`0x2Fc2Cac0Ec46c8a0C6da5aD66a7F0610678A9dD6`](https://testnet.monadexplorer.com/address/0x2Fc2Cac0Ec46c8a0C6da5aD66a7F0610678A9dD6) |
 | `TrustGate`     | [`0xA5e2c58B32F92825389E5B038aA4E8c69E6B5818`](https://testnet.monadexplorer.com/address/0xA5e2c58B32F92825389E5B038aA4E8c69E6B5818) |
+| `AgentNotes`    | [`0x216C15BdfE93a2B57f61A74c8B8a9eb893550928`](https://testnet.monadexplorer.com/address/0x216C15BdfE93a2B57f61A74c8B8a9eb893550928) |
 
 Three demo agents are seeded with real bilaterally-signed history (`scripts/seed-history.ts`, results in `deployments/seed-history.monad.json`): one clean grant, one flagged by a disputed receipt, one brand new with no history yet.
 
 The demo page's "free preview" button needs no wallet and costs no gas — `previewAccess` and `checkAccess` run identical contract logic, so the preview shows the exact same `GRANT`/`DENY` verdict and reason a real transaction would produce; only the transaction hash is missing. Connecting a wallet and running "gate on-chain" produces a real signed transaction with a link to the explorer, for anyone who wants to verify it happened.
+
+Each agent's one-line description in the UI is **not** hardcoded frontend copy — it's read live from `AgentNotes.noteOf(agentId)` (`scripts/seed-notes.ts`), a small contract kept separate from the access-control logic specifically so the already-tested `TrustGate`/`ActionLedger`/`AgentIdentity` trio never had to change. The app links directly to the `AgentNotes` contract on the explorer so anyone can confirm the description text was actually written on-chain, not invented client-side.
 
 ## Honest limitation
 
@@ -97,7 +100,7 @@ The bilateral-signature model defeats a lone liar: an agent can never write a `V
 ## Tech stack
 
 - **Contracts**: Solidity 0.8.24, OpenZeppelin 5.6.1, Hardhat 2.29 + TypeScript + ethers v6, targeting Monad testnet (chain id `10143`, EVM `cancun`)
-- **Frontend**: Vite + React 19 + TypeScript + Tailwind v4, ethers v6, plain injected-wallet connect (Rabby/MetaMask, no wallet-connection library), zh/en toggle (defaults to zh), mobile-first with a static embedded QR code linking to the live demo
+- **Frontend**: Vite + React 19 + TypeScript + Tailwind v4, ethers v6, plain injected-wallet connect (Rabby/MetaMask, no wallet-connection library), zh/en toggle (defaults to en — most Web3/judge traffic reads English first), mobile-first with a static embedded QR code linking to the live demo
 
 ## Running it
 
@@ -115,9 +118,11 @@ Deploying to Monad testnet requires a funded wallet's private key in `.env` (see
 cp .env.example .env          # fill in PRIVATE_KEY
 npm run deploy:monad          # AgentIdentity -> ActionLedger -> TrustGate, in order
 npm run seed:monad            # seeds real bilaterally-signed history for the demo
+npm run deploy-notes:monad    # AgentNotes — separate contract, on-chain agent descriptions
+npm run seed-notes:monad      # writes each demo agent's description on-chain
 ```
 
-Both scripts write their results to `deployments/` and self-verify against `previewAccess` before finishing.
+All four scripts write their results to `deployments/` and self-verify (the seed scripts against `previewAccess`) before finishing.
 
 ### Frontend
 

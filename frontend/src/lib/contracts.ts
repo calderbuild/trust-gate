@@ -1,5 +1,5 @@
 import { Contract, JsonRpcProvider, type Signer } from "ethers";
-import { TRUST_GATE_ABI } from "./abis";
+import { AGENT_NOTES_ABI, TRUST_GATE_ABI } from "./abis";
 import { CONTRACT_ADDRESSES, MONAD_TESTNET } from "./addresses";
 
 export interface PreviewAccessResult {
@@ -80,4 +80,26 @@ export function explorerTxUrl(txHash: string): string {
 
 export function explorerContractUrl(): string {
   return `${MONAD_TESTNET.blockExplorerUrl}/address/${CONTRACT_ADDRESSES.TrustGate}`;
+}
+
+export function explorerAgentNotesUrl(): string {
+  return `${MONAD_TESTNET.blockExplorerUrl}/address/${CONTRACT_ADDRESSES.AgentNotes}`;
+}
+
+function readOnlyAgentNotes(): Contract {
+  return new Contract(CONTRACT_ADDRESSES.AgentNotes, AGENT_NOTES_ABI, readProvider);
+}
+
+/**
+ * Reads the agent's one-line description straight from AgentNotes — the
+ * same text the UI shows is a real on-chain string keyed by agentId, not a
+ * client-side placeholder. `noteOf` returns "" for an unset agentId, which
+ * the caller renders as an explicit "no note recorded" state rather than
+ * silently falling back to made-up copy.
+ */
+export async function fetchAgentNote(agentId: bigint): Promise<{ zh: string; en: string }> {
+  const agentNotes = readOnlyAgentNotes();
+  const raw: string = await agentNotes.noteOf(agentId);
+  const [zh, en] = raw.split("|||");
+  return { zh: zh ?? "", en: en ?? zh ?? "" };
 }

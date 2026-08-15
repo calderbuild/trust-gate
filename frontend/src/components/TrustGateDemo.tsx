@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { DEMO_AGENTS } from "../lib/demoAgents";
-import { previewAccess, checkAccess, type PreviewAccessResult } from "../lib/contracts";
+import {
+  previewAccess,
+  checkAccess,
+  fetchAgentNote,
+  explorerAgentNotesUrl,
+  type PreviewAccessResult,
+} from "../lib/contracts";
 import { connectWallet, useHasInjectedWallet, type ConnectedWallet } from "../lib/wallet";
 import { t, DEFAULT_LOCALE, type Locale } from "../lib/i18n";
 import AgentRow from "./AgentRow";
@@ -24,6 +30,7 @@ export default function TrustGateDemo() {
   const hasWallet = useHasInjectedWallet();
 
   const [previews, setPreviews] = useState<Record<string, PreviewState>>({});
+  const [notes, setNotes] = useState<Record<string, { zh: string; en: string } | null>>({});
   const [selectedId, setSelectedId] = useState<bigint>(DEMO_AGENTS[0].id);
   const [wallet, setWallet] = useState<ConnectedWallet | null>(null);
   const [walletError, setWalletError] = useState<string | null>(null);
@@ -39,6 +46,9 @@ export default function TrustGateDemo() {
       loadPreview(agent.id).then((state) => {
         setPreviews((prev) => ({ ...prev, [agent.id.toString()]: state }));
       });
+      fetchAgentNote(agent.id)
+        .then((note) => setNotes((prev) => ({ ...prev, [agent.id.toString()]: note })))
+        .catch(() => setNotes((prev) => ({ ...prev, [agent.id.toString()]: { zh: "", en: "" } })));
     });
   }, []);
 
@@ -110,6 +120,7 @@ export default function TrustGateDemo() {
                 key={agent.id.toString()}
                 agent={agent}
                 preview={previews[agent.id.toString()] ?? { status: "loading" }}
+                note={notes[agent.id.toString()] ?? null}
                 selected={selectedId === agent.id}
                 onSelect={() => selectAgent(agent.id)}
                 locale={locale}
@@ -117,6 +128,17 @@ export default function TrustGateDemo() {
               />
             ))}
           </section>
+          <p className="mt-2 font-mono text-[11px] text-muted">
+            {dict.ledgerNote}{" "}
+            <a
+              href={explorerAgentNotesUrl()}
+              target="_blank"
+              rel="noreferrer"
+              className="text-seal-text underline decoration-dotted underline-offset-4 transition-colors duration-200 hover:text-ink"
+            >
+              AgentNotes ↗
+            </a>
+          </p>
 
           <section className="mt-6 flex flex-wrap items-start gap-4">
             <div>

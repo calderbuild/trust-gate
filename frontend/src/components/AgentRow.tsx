@@ -4,16 +4,19 @@ import { t, type Locale } from "../lib/i18n";
 
 type PreviewState = { status: "loading" } | { status: "error"; message: string } | { status: "ready"; data: PreviewAccessResult };
 
+type NoteState = { zh: string; en: string } | null;
+
 interface AgentRowProps {
   agent: DemoAgent;
   preview: PreviewState;
+  note: NoteState;
   selected: boolean;
   onSelect: () => void;
   locale: Locale;
   style?: React.CSSProperties;
 }
 
-export default function AgentRow({ agent, preview, selected, onSelect, locale, style }: AgentRowProps) {
+export default function AgentRow({ agent, preview, note, selected, onSelect, locale, style }: AgentRowProps) {
   return (
     <button
       type="button"
@@ -28,7 +31,13 @@ export default function AgentRow({ agent, preview, selected, onSelect, locale, s
         <span className="font-mono text-sm text-muted">{agent.name}</span>
         <PreviewCounts preview={preview} locale={locale} />
       </div>
-      <p className="mt-1 text-sm text-ink/80 font-sans">{agent.blurb[locale]}</p>
+      {note ? (
+        <p className="mt-1 text-sm text-ink/80 font-sans">{note[locale]}</p>
+      ) : (
+        <p className="mt-1 h-5 w-2/3 animate-pulse rounded-sm bg-line/60 font-sans text-sm text-transparent">
+          loading
+        </p>
+      )}
     </button>
   );
 }

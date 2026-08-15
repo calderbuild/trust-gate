@@ -1,6 +1,6 @@
 export type Locale = "zh" | "en";
 
-export const DEFAULT_LOCALE: Locale = "zh";
+export const DEFAULT_LOCALE: Locale = "en";
 
 interface Dictionary {
   eyebrow: string;
@@ -23,6 +23,7 @@ interface Dictionary {
   gateFailed: string;
   scanToTry: string;
   previewNote: string;
+  ledgerNote: string;
 }
 
 const DICTIONARIES: Record<Locale, Dictionary> = {
@@ -47,6 +48,7 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
     gateFailed: "链上验证交易失败，请重试。",
     scanToTry: "扫码用手机试试",
     previewNote: "同一套合约逻辑的预览结果，未产生链上交易",
+    ledgerNote: "上方每句描述都是从 AgentNotes 合约实时读出的，不是前端写死的文案，点开验证：",
   },
   en: {
     eyebrow: "On-chain trust ledger · Monad testnet",
@@ -70,6 +72,7 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
     gateFailed: "Transaction failed. Please try again.",
     scanToTry: "Scan to try it on your phone",
     previewNote: "Preview result from the same contract logic — no transaction was sent",
+    ledgerNote: "Every description above is read live from the AgentNotes contract, not hardcoded — check it:",
   },
 };
 
