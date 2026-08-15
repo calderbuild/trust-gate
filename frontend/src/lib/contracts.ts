@@ -57,11 +57,15 @@ export async function checkAccess(signer: Signer, agentId: bigint): Promise<Chec
       };
     }
     if (parsed?.name === "AccessDenied") {
+      // AccessDenied only carries the reason (cheaper to emit) — pull the
+      // real tally from previewAccess, which KTD3 guarantees agrees with
+      // the mined transaction, so the UI never shows a fake 0/0 count.
+      const { verifiedCount, mismatchCount } = await previewAccess(agentId);
       return {
         wouldGrant: false,
         reason: parsed.args.reason,
-        verifiedCount: 0n,
-        mismatchCount: 0n,
+        verifiedCount,
+        mismatchCount,
         txHash: receipt.hash,
       };
     }
@@ -72,4 +76,8 @@ export async function checkAccess(signer: Signer, agentId: bigint): Promise<Chec
 
 export function explorerTxUrl(txHash: string): string {
   return `${MONAD_TESTNET.blockExplorerUrl}/tx/${txHash}`;
+}
+
+export function explorerContractUrl(): string {
+  return `${MONAD_TESTNET.blockExplorerUrl}/address/${CONTRACT_ADDRESSES.TrustGate}`;
 }

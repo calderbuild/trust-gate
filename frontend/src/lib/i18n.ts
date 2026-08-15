@@ -18,8 +18,7 @@ interface Dictionary {
   checking: string;
   notDeployedYet: string;
   viewTx: string;
-  verifiedReceipt: string;
-  verifiedReceipts: string;
+  viewContract: string;
   connectFailed: string;
   gateFailed: string;
   scanToTry: string;
@@ -43,8 +42,7 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
     checking: "查询中…",
     notDeployedYet: "合约未部署",
     viewTx: "在 Monad 浏览器上查看交易 ↗",
-    verifiedReceipt: "条已验证记录",
-    verifiedReceipts: "条已验证记录",
+    viewContract: "这个结果由哪份合约算出？点开验证 ↗",
     connectFailed: "连接钱包失败，请重试。",
     gateFailed: "链上验证交易失败，请重试。",
     scanToTry: "扫码用手机试试",
@@ -67,8 +65,7 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
     checking: "checking…",
     notDeployedYet: "not deployed yet",
     viewTx: "View transaction on Monad Explorer ↗",
-    verifiedReceipt: "verified receipt",
-    verifiedReceipts: "verified receipts",
+    viewContract: "Which contract computed this? Check for yourself ↗",
     connectFailed: "Could not connect wallet. Please try again.",
     gateFailed: "Transaction failed. Please try again.",
     scanToTry: "Scan to try it on your phone",

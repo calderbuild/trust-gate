@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TrustGate — pitch deck</title>
+    <style>
+      :root {
+        --paper: #ede9e0;
+        --paper-raised: #f7f5f0;
+        --ink: #14171c;
+        --muted: #5b5f57;
+        --seal: #a9761f;
+        --seal-bg: rgba(169, 118, 31, 0.1);
+        --grant: #1b6e4c;
+        --deny: #a6301f;
+        --line: rgba(20, 23, 28, 0.16);
+        --line-strong: rgba(20, 23, 28, 0.32);
+        --serif: Georgia, "Iowan Old Style", "Palatino Linotype",
+          "Times New Roman", ui-serif, serif;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
+        --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo,
+          Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+        overflow: hidden;
+        height: 100%;
+      }
+
+      body {
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          rgba(20, 23, 28, 0.06) 1px,
+          transparent 0
+        );
+        background-size: 22px 22px;
+      }
+
+      .deck {
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 6vh 9vw;
+        opacity: 0;
+        transform: translateY(14px);
+        pointer-events: none;
+        transition: opacity 420ms cubic-bezier(0.2, 0, 0, 1),
+          transform 420ms cubic-bezier(0.2, 0, 0, 1);
+      }
+
+      .slide.active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--seal);
+        margin: 0 0 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--seal);
+        display: inline-block;
+      }
+
+      h1 {
+        font-family: var(--serif);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 1.04;
+        margin: 0 0 1.2rem;
+        font-size: clamp(2.4rem, 5.6vw, 4.6rem);
+      }
+
+      h2 {
+        font-family: var(--serif);
+        font-weight: 700;
+        line-height: 1.08;
+        margin: 0 0 1rem;
+        font-size: clamp(1.8rem, 3.6vw, 3rem);
+      }
+
+      .lede {
+        font-size: clamp(1.05rem, 1.7vw, 1.4rem);
+        line-height: 1.55;
+        color: var(--ink);
+        max-width: 46ch;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .stat-block {
+        display: flex;
+        align-items: baseline;
+        gap: 1.2rem;
+        margin: 1.6rem 0;
+      }
+
+      .stat-number {
+        font-family: var(--serif);
+        font-weight: 700;
+        font-size: clamp(3.6rem, 9vw, 7.5rem);
+        line-height: 1;
+        color: var(--deny);
+        letter-spacing: -0.02em;
+      }
+
+      .stat-caption {
+        font-size: 0.98rem;
+        color: var(--muted);
+        max-width: 26ch;
+        line-height: 1.4;
+      }
+
+      .footnote {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 1.6rem;
+        letter-spacing: 0.02em;
+      }
+
+      .rule {
+        border: none;
+        border-top: 1px solid var(--line);
+        margin: 1.6rem 0;
+        width: 100%;
+        max-width: 640px;
+      }
+
+      /* ledger receipt card, used for architecture + limitation slides */
+      .ledger-card {
+        background: var(--paper-raised);
+        border: 1px solid var(--line-strong);
+        border-radius: 3px;
+        padding: 1.3rem 1.5rem;
+        position: relative;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.1rem;
+        max-width: 980px;
+        margin-top: 1.6rem;
+      }
+
+      .card-num {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--seal);
+        letter-spacing: 0.08em;
+      }
+
+      .card-title {
+        font-family: var(--serif);
+        font-weight: 700;
+        font-size: 1.15rem;
+        margin: 0.35rem 0 0.5rem;
+      }
+
+      .card-body {
+        font-size: 0.88rem;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .flow {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        margin: 1.8rem 0;
+        flex-wrap: wrap;
+        max-width: 720px;
+      }
+
+      .flow-step {
+        font-family: var(--mono);
+        font-size: 0.84rem;
+        background: var(--paper-raised);
+        border: 1px solid var(--line-strong);
+        border-radius: 3px;
+        padding: 0.55rem 0.85rem;
+        white-space: nowrap;
+      }
+
+      .flow-step.grant {
+        border-color: var(--grant);
+        color: var(--grant);
+      }
+      .flow-step.deny {
+        border-color: var(--deny);
+        color: var(--deny);
+      }
+
+      .flow-arrow {
+        font-family: var(--mono);
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      .addr-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px dashed var(--line-strong);
+        max-width: 720px;
+      }
+
+      .addr-row:last-child {
+        border-bottom: none;
+      }
+
+      .addr-label {
+        font-size: 0.85rem;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+
+      .addr-value {
+        font-family: var(--mono);
+        font-size: 0.86rem;
+        letter-spacing: -0.01em;
+      }
+
+      .chain-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--seal);
+        background: var(--seal-bg);
+        border: 1px solid rgba(169, 118, 31, 0.35);
+        border-radius: 999px;
+        padding: 0.35rem 0.9rem;
+        margin-bottom: 1.4rem;
+      }
+
+      .scope-tag {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border: 1.5px solid var(--ink);
+        padding: 0.3rem 0.7rem;
+        border-radius: 2px;
+        margin-bottom: 1.2rem;
+      }
+
+      /* Close-slide stamp */
+      .stamp-wrap {
+        display: flex;
+        align-items: center;
+        gap: 2.4rem;
+        margin-top: 1.4rem;
+      }
+
+      .stamp {
+        font-family: var(--serif);
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 2.1rem;
+        letter-spacing: 0.06em;
+        border: 5px solid var(--grant);
+        color: var(--grant);
+        padding: 0.5rem 1.3rem;
+        border-radius: 4px;
+        transform: rotate(-6deg) scale(0.85);
+        opacity: 0;
+        transition: transform 560ms cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 380ms ease;
+      }
+
+      .slide.active .stamp {
+        opacity: 1;
+        transform: rotate(-6deg) scale(1);
+        transition-delay: 320ms;
+      }
+
+      /* progress / nav chrome */
+      .chrome {
+        position: fixed;
+        left: 9vw;
+        right: 9vw;
+        bottom: 3.4vh;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--muted);
+        letter-spacing: 0.05em;
+        z-index: 10;
+      }
+
+      .chrome-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .chrome-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--line-strong);
+        transition: background 200ms ease, transform 200ms ease;
+      }
+
+      .dot.on {
+        background: var(--seal);
+        transform: scale(1.5);
+      }
+
+      .perforation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background-image: radial-gradient(
+          circle,
+          var(--line-strong) 1.4px,
+          transparent 1.6px
+        );
+        background-size: 14px 4px;
+        z-index: 10;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .slide,
+        .stamp {
+          transition: none !important;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .card-grid {
+          grid-template-columns: 1fr;
+        }
+        .stamp-wrap {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="perforation" aria-hidden="true"></div>
+    <div class="deck" id="deck">
+      <section class="slide active" data-slide>
+        <p class="eyebrow">Monad Blitz · Beijing V2 · 2026-08-15</p>
+        <h1>TrustGate</h1>
+        <div class="stat-block">
+          <span class="stat-number">59–90%</span>
+          <span class="stat-caption"
+            >of on-chain agent reputation feedback in a 2026 study of the
+            ERC-8004 registry shows Sybil patterns.</span
+          >
+        </div>
+        <p class="lede">
+          Reputation is self-reported. An agent can write its own good reviews.
+          TrustGate makes that impossible.
+        </p>
+        <p class="footnote">source: arxiv.org/abs/2606.26028</p>
+      </section>
+
+      <section class="slide" data-slide>
+        <p class="eyebrow">The rule</p>
+        <h2>An agent can never write its own history.</h2>
+        <p class="lede muted">
+          An interaction only resolves once the <em>counterparty</em> signs it
+          with their own key. Not the agent. Not an admin. The other side.
+        </p>
+        <div
+          class="flow"
+          role="img"
+          aria-label="Receipt created by agent, resolved by counterparty signature, then verified or mismatch"
+        >
+          <span class="flow-step">createReceipt()</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">counterparty signs</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step grant">VERIFIED</span>
+          <span class="flow-arrow">/</span>
+          <span class="flow-step deny">MISMATCH</span>
+        </div>
+        <p class="lede muted" style="font-size: 0.95rem; max-width: 52ch">
+          One disputed receipt is a veto — it doesn't get diluted by ten clean
+          ones.
+        </p>
+      </section>
+
+      <section class="slide" data-slide>
+        <p class="eyebrow">Three contracts, one job each</p>
+        <h2>The ledger, split by concern.</h2>
+        <div class="card-grid">
+          <div class="ledger-card">
+            <p class="card-num">01</p>
+            <p class="card-title">AgentIdentity</p>
+            <p class="card-body">
+              Registers agents. Tracks active vs. revoked. Owns nothing else.
+            </p>
+          </div>
+          <div class="ledger-card">
+            <p class="card-num">02</p>
+            <p class="card-title">ActionLedger</p>
+            <p class="card-body">
+              Records receipts. Resolves VERIFIED/MISMATCH only when the
+              counterparty's own signature recovers correctly.
+            </p>
+          </div>
+          <div class="ledger-card">
+            <p class="card-num">03</p>
+            <p class="card-title">TrustGate</p>
+            <p class="card-body">
+              Read-only over both.
+              <code style="font-family: var(--mono); font-size: 0.82em"
+                >previewAccess</code
+              >
+              (free) and
+              <code style="font-family: var(--mono); font-size: 0.82em"
+                >checkAccess</code
+              >
+              (real tx) run identical logic — they can never disagree.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide>
+        <p class="eyebrow">Deployed, not a design sketch</p>
+        <h2>Live on Monad testnet.</h2>
+        <span class="chain-badge">chain id 10143</span>
+        <div class="ledger-card" style="max-width: 760px">
+          <div class="addr-row">
+            <span class="addr-label">AgentIdentity</span>
+            <span class="addr-value">0xC51A…7095</span>
+          </div>
+          <div class="addr-row">
+            <span class="addr-label">ActionLedger</span>
+            <span class="addr-value">0x2Fc2…9dD6</span>
+          </div>
+          <div class="addr-row">
+            <span class="addr-label">TrustGate</span>
+            <span class="addr-value">0xA5e2…5818</span>
+          </div>
+        </div>
+        <p class="lede muted" style="font-size: 0.95rem; margin-top: 1.3rem">
+          Three demo agents, seeded with real bilaterally-signed history. About
+          to check them live.
+        </p>
+      </section>
+
+      <section class="slide" data-slide>
+        <p class="eyebrow">Honest limitation</p>
+        <span class="scope-tag">Disclosed scope, not a blind spot</span>
+        <h2>Defeats a liar. Not a conspiracy.</h2>
+        <p class="lede">
+          An agent can never sign its own good review — that's solved. If one
+          operator controls <em>both</em> wallets, they can still sign a
+          mutually-confirmed fake history.
+        </p>
+        <p class="lede muted" style="font-size: 0.95rem; margin-top: 0.9rem">
+          Catching that needs staked deposits with a slashing challenge — a
+          different mechanism, and building it correctly in one day would have
+          cost us the core mechanism working at all.
+        </p>
+      </section>
+
+      <section class="slide" data-slide>
+        <p class="eyebrow">TrustGate</p>
+        <h2>Reputation an agent can't write for itself.</h2>
+        <p class="lede muted">Live on Monad testnet right now.</p>
+        <div class="stamp-wrap">
+          <div class="stamp">Granted</div>
+          <p class="footnote" style="margin-top: 0">
+            trust-gate-flax.vercel.app
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <div class="chrome">
+      <span class="chrome-brand"
+        ><span aria-hidden="true">⟨</span> use ←/→ or click
+        <span aria-hidden="true">⟩</span></span
+      >
+      <span class="chrome-dots" id="dots"></span>
+    </div>
+
+    <script>
+      (function () {
+        var slides = Array.prototype.slice.call(
+          document.querySelectorAll("[data-slide]")
+        );
+        var dotsWrap = document.getElementById("dots");
+        var current = 0;
+
+        slides.forEach(function (_, i) {
+          var d = document.createElement("span");
+          d.className = "dot" + (i === 0 ? " on" : "");
+          dotsWrap.appendChild(d);
+        });
+        var dots = Array.prototype.slice.call(dotsWrap.children);
+
+        function show(i) {
+          if (i < 0 || i >= slides.length) return;
+          slides[current].classList.remove("active");
+          dots[current].classList.remove("on");
+          current = i;
+          slides[current].classList.add("active");
+          dots[current].classList.add("on");
+        }
+
+        function next() {
+          show(current + 1);
+        }
+        function prev() {
+          show(current - 1);
+        }
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+            e.preventDefault();
+            next();
+          }
+          if (e.key === "ArrowLeft" || e.key === "PageUp") {
+            e.preventDefault();
+            prev();
+          }
+        });
+
+        document.getElementById("deck").addEventListener("click", function (e) {
+          var rect = this.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          if (x > rect.width / 2) next();
+          else prev();
+        });
+
+        dots.forEach(function (d, i) {
+          d.style.cursor = "pointer";
+          d.style.pointerEvents = "auto";
+          d.addEventListener("click", function (e) {
+            e.stopPropagation();
+            show(i);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

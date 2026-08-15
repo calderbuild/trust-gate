@@ -1,6 +1,6 @@
 import type { PreviewAccessResult } from "../lib/contracts";
-import { explorerTxUrl } from "../lib/contracts";
-import { reasonLabel } from "../lib/reasonLabel";
+import { explorerTxUrl, explorerContractUrl } from "../lib/contracts";
+import { reasonLabel, reasonRule } from "../lib/reasonLabel";
 import { t, type Locale } from "../lib/i18n";
 
 interface ResultStampProps {
@@ -16,7 +16,6 @@ interface ResultStampProps {
 export default function ResultStamp({ result, locale, agentName }: ResultStampProps) {
   const granted = result.wouldGrant;
   const dict = t(locale);
-  const receiptWord = result.verifiedCount === 1n ? dict.verifiedReceipt : dict.verifiedReceipts;
   return (
     <div className="flex flex-col items-center gap-4 py-8">
       <div
@@ -29,10 +28,15 @@ export default function ResultStamp({ result, locale, agentName }: ResultStampPr
       >
         {granted ? (locale === "zh" ? "通过" : "Granted") : locale === "zh" ? "拒绝" : "Denied"}
       </div>
-      <p className="font-mono text-sm text-muted text-center">
-        {agentName} · {reasonLabel(result.reason, locale)}
-        {granted && ` · ${result.verifiedCount.toString()} ${receiptWord}`}
-      </p>
+      <div className="flex flex-col items-center gap-1 text-center">
+        <p className="font-mono text-sm text-muted">
+          {agentName} · {reasonLabel(result.reason, locale)}
+        </p>
+        <p className="font-mono text-xs text-muted">
+          {result.verifiedCount.toString()} {dict.verified} · {result.mismatchCount.toString()} {dict.mismatch}
+        </p>
+        <p className="max-w-xs font-mono text-[11px] text-muted/80">{reasonRule(result.reason, locale)}</p>
+      </div>
       {result.txHash ? (
         <a
           href={explorerTxUrl(result.txHash)}
@@ -43,7 +47,17 @@ export default function ResultStamp({ result, locale, agentName }: ResultStampPr
           {dict.viewTx}
         </a>
       ) : (
-        <p className="font-mono text-xs text-muted">{dict.previewNote}</p>
+        <div className="flex flex-col items-center gap-1.5">
+          <p className="font-mono text-xs text-muted text-center">{dict.previewNote}</p>
+          <a
+            href={explorerContractUrl()}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block px-2 py-2 -mx-2 -my-2 font-mono text-xs text-seal-text underline decoration-dotted underline-offset-4 transition-colors duration-200 hover:text-ink active:text-ink"
+          >
+            {dict.viewContract}
+          </a>
+        </div>
       )}
     </div>
   );
